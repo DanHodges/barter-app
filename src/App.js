@@ -72,8 +72,8 @@ class GroupForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({ value: event.target.value });
+  handleChange({ target: { name, value } }) {
+    this.setState({ [name]: value });
   }
 
   handleSubmit(event) {
@@ -90,9 +90,11 @@ class GroupForm extends React.Component {
     //   console.log("post");
     // });
 
+    const { groupName } = this.state;
+    console.log({ groupName });
     fetch("http://localhost:3001/foo", {
       method: "POST", // or 'PUT'
-      body: JSON.stringify({ foo: "bar" }),
+      body: { groupName },
       headers: new Headers({
         "Content-Type": "application/json",
         accesstoken:
@@ -117,7 +119,8 @@ class GroupForm extends React.Component {
           Name:
           <input
             type="text"
-            value={this.state.value}
+            name="groupName"
+            value={this.state.groupName}
             onChange={this.handleChange}
           />
         </label>
