@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-// import Amplify, { API } from "aws-amplify";
 import Amplify from "aws-amplify";
 import { withAuthenticator } from "aws-amplify-react";
 import logo from "./logo.svg";
@@ -18,22 +17,6 @@ Amplify.configure({
     userPoolId: USER_POOL_ID, //OPTIONAL - Amazon Cognito User Pool ID
     userPoolWebClientId: USER_POOL_WEB_CLIENT_ID, //OPTIONAL - Amazon Cognito Web Client ID
   },
-  // Analytics: {
-  //   appId: 'XXXXXXXXXXabcdefghij1234567890ab', //OPTIONAL -  Amazon Pinpoint App ID
-  //   region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
-  // }
-  // API: {
-  //   endpoints: [
-  //     {
-  //       name: "ApiName1",
-  //       endpoint: "https://1234567890-abcdefgh.amazonaws.com",
-  //     },
-  //     {
-  //       name: "ApiName2",
-  //       endpoint: "https://1234567890-abcdefghijkl.amazonaws.com",
-  //     },
-  //   ],
-  // },
 });
 
 class App extends Component {
@@ -66,7 +49,7 @@ export default withAuthenticator(App);
 class GroupForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    this.state = { groupName: "" };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -79,19 +62,8 @@ class GroupForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    // let apiName = "ApiName1";
-    // let path = "/foo";
-    // let myInit = {
-    //   // OPTIONAL
-    //   body: { foo: "bar" },
-    //   headers: {}, // OPTIONAL
-    // };
-    // API.post(apiName, path, myInit).then(() => {
-    //   console.log("post");
-    // });
-
     const { groupName } = this.state;
-    console.log({ groupName });
+
     fetch("http://localhost:3001/foo", {
       method: "POST", // or 'PUT'
       body: { groupName },
@@ -116,7 +88,7 @@ class GroupForm extends React.Component {
     return (
       <form onSubmit={this.handleSubmit}>
         <label>
-          Name:
+          Group Name:
           <input
             type="text"
             name="groupName"
