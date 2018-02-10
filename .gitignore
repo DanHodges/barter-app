@@ -21,3 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 .idea/
 barter-app.iml
+src/env.js
