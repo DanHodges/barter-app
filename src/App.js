@@ -19,15 +19,35 @@ Amplify.configure({
   },
 });
 
+const accesstoken =
+  localStorage[
+    Object.keys(localStorage).find(
+      key =>
+        key.includes(USER_POOL_WEB_CLIENT_ID) && key.includes("accessToken"),
+    )
+  ];
+
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       user: "bob",
+      group: "",
     };
   }
-  componentDidMount() {}
+  componentDidMount() {
+    fetch("http://localhost:3000/api/v1/group", {
+      headers: new Headers({
+        accesstoken,
+      }),
+    })
+      .then(res => res.json())
+      .catch(error => console.error("Error:", error))
+      .then(response => {
+        console.log("Success:", response);
+      });
+  }
   render() {
     return (
       <div className="App">
@@ -35,10 +55,21 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <div className="App-intro">
+          <Dashboard
+            items={[
+              { title: "milk", selected: true },
+              { title: "honey", selected: false },
+              { title: "gas", selected: true },
+            ]}
+            wishes={[
+              { title: "maid", selected: false },
+              { title: "love", selected: false },
+            ]}
+          />
+        </div>
         <GroupForm />
+        <AddItemForm />
       </div>
     );
   }
@@ -64,19 +95,12 @@ class GroupForm extends React.Component {
 
     const { groupName } = this.state;
 
-    fetch("http://localhost:3001/foo", {
+    fetch("http://localhost:3000/api/v1/groups", {
       method: "POST", // or 'PUT'
       body: { groupName },
       headers: new Headers({
         "Content-Type": "application/json",
-        accesstoken:
-          localStorage[
-            Object.keys(localStorage).find(
-              key =>
-                key.includes(USER_POOL_WEB_CLIENT_ID) &&
-                key.includes("accessToken"),
-            )
-          ],
+        accesstoken,
       }),
     })
       .then(res => res.json())
@@ -98,6 +122,84 @@ class GroupForm extends React.Component {
         </label>
         <input type="submit" value="Submit" />
       </form>
+    );
+  }
+}
+
+class AddItemForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { itemName: "" };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange({ target: { name, value } }) {
+    this.setState({ [name]: value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const { itemName } = this.state;
+
+    fetch("http://localhost:3000/api/v1/item", {
+      method: "POST", // or 'PUT'
+      body: { itemName },
+      headers: new Headers({
+        "Content-Type": "application/json",
+        accesstoken,
+      }),
+    })
+      .then(res => res.json())
+      .catch(error => console.error("Error:", error))
+      .then(response => console.log("Success:", response));
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Item Name:
+          <input
+            type="text"
+            name="itemName"
+            value={this.state.itemName}
+            onChange={this.handleChange}
+          />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+
+const Item = ({ title, taken }) => (
+  <div>
+    <h1 style={{ background: taken ? "red" : "blue" }}>{title}</h1>
+  </div>
+);
+
+const List = ({ items }) => (
+  <ul>
+    {items.map(item => (
+      <li key={item.title}>
+        <Item title={item.title} taken={item.taken || false} />
+      </li>
+    ))}
+  </ul>
+);
+
+class Dashboard extends Component {
+  render() {
+    const { items, wishes } = this.props;
+
+    return (
+      <div style={{ display: "flex" }}>
+        <List items={items} />
+        <List items={wishes} />
+      </div>
     );
   }
 }
