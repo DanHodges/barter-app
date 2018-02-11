@@ -97,7 +97,7 @@ class GroupForm extends React.Component {
 
     fetch("http://localhost:3000/api/v1/groups", {
       method: "POST", // or 'PUT'
-      body: { groupName },
+      body: JSON.stringify({ groupName }),
       headers: new Headers({
         "Content-Type": "application/json",
         accesstoken,
@@ -129,7 +129,7 @@ class GroupForm extends React.Component {
 class AddItemForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { itemName: "" };
+    this.state = { itemName: "", quantity: 0 };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -142,11 +142,11 @@ class AddItemForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const { itemName } = this.state;
+    const { itemName, quantity } = this.state;
 
-    fetch("http://localhost:3000/api/v1/item", {
+    fetch("http://localhost:3000/api/v1/items", {
       method: "POST", // or 'PUT'
-      body: { itemName },
+      body: JSON.stringify({ itemName, quantity }),
       headers: new Headers({
         "Content-Type": "application/json",
         accesstoken,
@@ -160,6 +160,15 @@ class AddItemForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
+        <label>
+          Quantity:
+          <input
+            type="text"
+            name="quantity"
+            value={this.state.quantity}
+            onChange={this.handleChange}
+          />
+        </label>
         <label>
           Item Name:
           <input
